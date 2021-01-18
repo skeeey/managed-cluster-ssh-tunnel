@@ -1,0 +1,10 @@
+#!/bin/sh
+
+token=`cat /sa/secrets/token`
+
+svc=`host ssh-tunnel | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"`
+
+curl --cacert /sa/secrets/ca.crt \
+   --header "Authorization: Bearer ${token}" \
+   --resolve kubernetes.default:6443:${svc} \
+   -v https://kubernetes.default:6443/api/v1/namespaces/default/pods

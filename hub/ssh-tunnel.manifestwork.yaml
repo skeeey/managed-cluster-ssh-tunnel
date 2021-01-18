@@ -1,0 +1,36 @@
+apiVersion: work.open-cluster-management.io/v1
+kind: ManifestWork
+metadata:
+  name: sshd
+spec:
+  workload:
+    manifests:
+    - apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: ssh-tunnel
+        name: ssh-tunnel
+        namespace: default
+      spec:
+        selector:
+          matchLabels:
+            app: ssh-tunnel
+        template:
+          metadata:
+            labels:
+              app: ssh-tunnel
+          spec:
+            containers:
+            - name: ssh-tunnel
+              image: quay.io/skeeey/ssh:v0.1.0
+              imagePullPolicy: IfNotPresent
+              command:
+              - "ssh"
+              - "-N"
+              - "-g"
+              - "-o StrictHostKeyChecking=no"
+              - "-R 6443:kubernetes.default:443"
+              - "tunnel@10.0.118.47"
+              - "-p 30022"
+              - "-vvv"
